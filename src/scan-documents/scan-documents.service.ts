@@ -14,6 +14,7 @@ export class ScanDocumentsService {
   private readonly sensitiveDataFile = path.resolve('./sensitive-files.json');
   private readonly errorDataFile = path.resolve('./error-files.json');
   private readonly lastProcessedFile = path.resolve('./last-processed.txt');
+  private readonly excludedExtensions = ['.csv', '.xls'];
 
   constructor(private configService: ConfigService) {
     this.localDir = this.configService.get<string>('LOCAL_DIR');
@@ -116,7 +117,10 @@ export class ScanDocumentsService {
         if (stats.isDirectory()) {
           collectFiles(fullPath);
         } else if (stats.isFile()) {
-          allFiles.push(fullPath);
+          const extension = path.extname(fullPath).toLowerCase();
+          if (!this.excludedExtensions.includes(extension)) {
+            allFiles.push(fullPath);
+          }
         }
       }
     };
@@ -143,11 +147,11 @@ export class ScanDocumentsService {
       try {
         const result = await this.analyzeFile(relativePath);
         analyzedFiles.push({ filePath: relativePath, result });
-        this.saveLastProcessedFile(fullPath); 
+        this.saveLastProcessedFile(fullPath);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         errors.push({ filePath: relativePath, error: errorMessage });
-        this.saveLastProcessedFile(fullPath); 
+        this.saveLastProcessedFile(fullPath);
       }
     }
 

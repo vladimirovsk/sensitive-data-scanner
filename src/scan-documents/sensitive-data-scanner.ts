@@ -73,14 +73,14 @@ export class SensitiveDataScanner {
       } catch (workerError) {
         const errorMessage = workerError instanceof Error ? workerError.message : 'Unknown Tesseract error';
         this.logger.error(`Tesseract processing failed for ${filePath}: ${errorMessage}`);
-        throw new Error(errorMessage); // Передаем ошибку дальше
+        throw new Error(errorMessage); 
       } finally {
         await worker.terminate();
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error extracting text from image';
       this.logger.error(`Unexpected error extracting text from image ${filePath}: ${errorMessage}`);
-      throw new Error(errorMessage); // Убедимся, что ошибка передается
+      throw new Error(errorMessage);
     } finally {
       if (isHeic && fs.existsSync(imagePath)) {
         try {
@@ -151,7 +151,7 @@ export class SensitiveDataScanner {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error scanning file';
       this.logger.error(`Error scanning file ${filePath}: ${errorMessage}`);
-      throw new Error(errorMessage); // Передаем ошибку в сервис
+      throw new Error(errorMessage);
     }
   }
 }
